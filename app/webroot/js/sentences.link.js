@@ -49,6 +49,93 @@ function linkToSentenceByDrop(event, sentenceId, langFilter) {
     $("#linkToSubmitButton" + sentenceId).trigger("click");
 }
 
+
+angular.module('app')
+.controller('LinkVocabularyController',['$http', '$scope', '$timeout', function($http, $scope, $timeout){
+    
+    var autoCompleteMinLength = 3;
+    $scope.matches = [];
+    //form.error may indicate form errors
+    $scope.form = {"$error" : {}};
+    $scope.item = {};
+    $scope.ajaxUnderway = false;
+    var that = this;
+    $scope.currentId = null;
+    
+    //Initialize default vocab
+    if(typeof lastVocabulary !== "undefined"){
+        $scope.selectedItem = lastVocabulary;
+    }
+    
+    this.toggleForm = function(id){
+        $scope.currentId = id;
+        htmlId= '#' + 'linkToVocabulary' + id.toString();
+        $(htmlId).toggleClass('ng-hide');
+    }
+    
+    this.getMatches = function(searchString){
+        if(searchString.length < autoCompleteMinLength)
+            return [];
+        var that = this;
+        
+        return $http({
+            method: 'POST',
+            url: '/vocabulary/search',
+            data:{
+                'data[term]' : JSON.stringify(searchString)
+            }
+            }).then(function successCallback(response) {
+                if(response.data.success == false){
+                    $scope.form['$error'][response.data.errMsg] = true;
+                }
+                return response.data;
+              }, function errorCallback(response) {
+                  $scope.form['$error']['ajaxErr'] = true;
+              });
+              
+    }
+
+    this.linkCurrent = function(item){
+        var itemId = "";
+        var vocabText = "";
+        //Shall we create a new vocabulary item, or just associate something?
+        if(item != null){
+            itemId = item.id;
+        }
+        vocabText = $scope.searchText;
+        $scope.ajaxUnderway = true;
+        var currentId = $scope.currentId;
+
+        return $http({
+            method: 'POST',
+            url: '/vocabulary/handleAssociation',
+            data:{
+                'data[action]'          : 'associate',
+                'data[sentence_id]'     : JSON.stringify($scope.currentId),
+                'data[vocabulary_id]'   : JSON.stringify(itemId),
+                'data[vocabText]'       : JSON.stringify(vocabText)
+            }
+            }).then(function successCallback(response) {
+                $timeout(function(){
+                $scope.ajaxUnderway = false;
+                    if(response.data.success == false){
+                        $scope.form['$error'][response.data.errMsg] = true;
+                    }
+                    else{
+                        $scope.form['$error'] = {};
+                        that.toggleForm(currentId);
+                    }   
+                });
+                return response.data;
+              }, function errorCallback(response) {
+                  ajaxUnderway = false;
+                  $scope.form['$error']['ajaxErr'] = true;
+              });
+              
+    }
+}]
+);
+
 function linkToSentence(sentenceId, langFilter) {
     var keyPressed = function(event) {
         if(event.keyCode == 13) { // allow submitting with enter key

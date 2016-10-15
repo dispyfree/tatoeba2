@@ -567,6 +567,34 @@ class SentencesController extends AppController
         }
         return $result;
     }
+    
+    /**
+     * lists suggestions for the given term. This equals a regular, non-exact search
+     * @param string data[term]  the term to suggest sentences for
+     * @return  string  JSON encoded result
+     */
+    public function suggestions(){
+        $maxSuggestions = 15;
+        $term = @$this->data['term'];
+        $sentences = $this->Sentence->find('all', array(
+           'limit' => $maxSuggestions,
+            'conditions' => array(
+                'text LIKE' => '%'.$term.'%'
+            )
+        ));
+        
+        $this->autoRender = false;
+        $res = array();
+        foreach($sentences as $sent){
+            $res[] = array(
+                'id' => $sent['Sentence']['id'],
+                'lang' => $sent['Sentence']['lang'],
+                'text' => $sent['Sentence']['text'],
+            );
+        }
+        
+        return json_encode($res);
+    }
 
     /**
      * Search sentences.

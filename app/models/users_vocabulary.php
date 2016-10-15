@@ -82,7 +82,7 @@ class UsersVocabulary extends AppModel
 
         $result = array(
             'conditions' => $conditions,
-            'fields' => array('created'),
+            'fields' => array('id', 'num_assoc_sent', 'created'),
             'contain' => array(
                 'Vocabulary' => array('id', 'lang', 'text', 'numSentences')
             ),

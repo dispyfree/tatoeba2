@@ -61,7 +61,7 @@ $this->set('title_for_layout', $pages->formatTitle($title));
                 $text = $item['Vocabulary']['text'];
                 $numSentences = $item['Vocabulary']['numSentences'];
                 $numSentencesLabel = $numSentences == 1000 ? '1000+' : $numSentences;
-                $url = $html->url(array(
+                $exactUrl = $html->url(array(
                     'controller' => 'sentences',
                     'action' => 'search',
                     '?' => array(
@@ -69,18 +69,32 @@ $this->set('title_for_layout', $pages->formatTitle($title));
                         'from' => $lang
                     )
                 ));
+
+                $ownUrl =  $html->url(array(
+                    'controller' => 'vocabulary',
+                    'action' => 'sentences',
+                    $item['UsersVocabulary']['id']
+                ));
+                $ownCount = $item['UsersVocabulary']['num_assoc_sent'];
                 ?>
+            
                 <md-list-item id="vocabulary_<?= $divId ?>">
                     <img class="vocabulary-lang" src="/img/flags/<?= $lang ?>.png"/>
                     <div class="vocabulary-text" flex><?= $text ?></div>
-                    <md-button class="md-primary" href="<?= $url ?>">
+                    <md-button class="md-primary" href="<?= $exactUrl ?>">
                         <?= format(
-                            __n(
-                                '{number} sentence', '{number} sentences',
-                                $numSentences,
-                                true
+                            __(
+                                'exact match: {number}', true
                             ),
                             array('number' => $numSentencesLabel)
+                        ); ?>
+                    </md-button>
+                     <md-button class="md-primary" href="<?= $ownUrl ?>">
+                        <?= format(
+                            __(
+                                'mine: {number}', true
+                            ),
+                            array('number' => $ownCount)
                         ); ?>
                     </md-button>
                     <? if ($canEdit) { ?>

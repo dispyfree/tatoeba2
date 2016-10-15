@@ -95,7 +95,8 @@ class SentencesHelper extends AppHelper
         $id = $sentence['id'];
 
         ?>
-        <div class="sentences_set" id="sentences_group_<?php echo $id; ?>">
+        <div class="sentences_set" ng-controller="LinkVocabularyController as link" 
+             id="sentences_group_<?php echo $id; ?>">
         <?php
 
         if ($duplicate) {
@@ -473,6 +474,8 @@ class SentencesHelper extends AppHelper
             null,
             $isEditable
         );
+        
+        $this->Menu->displayFooter($sentence);
     }
 
 

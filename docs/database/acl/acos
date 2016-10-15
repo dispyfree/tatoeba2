@@ -50,6 +50,7 @@ cake acl create aco Sentences change_language
 cake acl create aco Sentences import
 cake acl create aco Sentences edit_correctness
 cake acl create aco Sentences edit_audio
+cake acl create aco Sentences suggestions
 
 cake acl create aco controllers SentencesLists
 cake acl create aco SentencesLists edit
@@ -114,3 +115,6 @@ cake acl create aco Vocabulary add_sentences
 cake acl create aco Vocabulary save
 cake acl create aco Vocabulary remove
 cake acl create aco Vocabulary save_sentence
+cake acl create aco Vocabulary search
+cake acl create aco Vocabulary handleAssociation
+cake acl create aco Vocabulary sentences

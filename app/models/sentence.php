@@ -74,7 +74,7 @@ class Sentence extends AppModel
             'className' => 'Translation',
             'foreignKey' => 'sentence_id',
         ),
-        'ReindexFlag',
+        'ReindexFlag'
     );
 
     public $belongsTo = array(
@@ -104,6 +104,12 @@ class Sentence extends AppModel
             'associationForeignKey' => 'tag_id',
             'with' => 'TagsSentences',
         ),
+        'UsersVocabulary'           => array(
+            'className' => 'UsersVocabulary',
+            'joinTable' => 'users_vocabulary_sentences',
+            'foreign_key' => 'sentence_id',
+            'associationForeignKey' => 'user_vocabulary_id',
+        ) 
     );
 
 

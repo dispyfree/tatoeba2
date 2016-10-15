@@ -45,6 +45,31 @@ class MenuHelper extends AppHelper
         'Session',
         'Images'
     );
+    
+    /**
+     * Sometimes, part of content should be displayed below the sentence
+     * i.e. there may be buttons on top of the sentence, which trigger
+     * forms below the sentence. The footer collects all callbacks which
+     * generate this content
+     */
+    protected $footerFuncs = array();
+    protected function registerFooter($func){
+        if(is_string($func))
+            $this->footerFuncs[] = array($this, $func);
+        else if(is_array($func))
+            $this->footerFuncs[] = $func;
+        else
+            throw new BadMethodCallException("No valid callback provided");
+    }
+    
+    public function displayFooter($sentence){
+        foreach($this->footerFuncs as $callb)
+            call_user_func($callb, $sentence);
+    }
+    
+    protected function flushFooter(){
+        $this->footerFuncs = array();
+    }
 
 
     /**
@@ -252,6 +277,67 @@ class MenuHelper extends AppHelper
         echo $this->Html->tag('/li');
     }
 
+    
+    public function linkToVocabulary($sentenceId){
+        ?>
+            
+        <li class="option" 
+             ng-click="link.toggleForm(<?php echo $sentenceId; ?>)" title="<?= __('Link to vocabulary'); ?>" >
+             <md-icon aria-label="<?= __('associate item'); ?>" 
+                      class="assocSentenceIcon ng-scope material-icons">library_add</md-icon>
+             
+        </li>
+         
+        <?php
+        $this->registerFooter('linkVocabularyFooter');
+    }
+    
+    public function linkVocabularyFooter($sentence){
+        $divId = "linkToVocabulary".$sentence['id'];
+        ?>
+        <div ng-show="false"
+             id="<?= $divId ?>" >
+            <md-input-container class="vocabularyAutoComplete md-block">
+                <h3><?php __('Link this sentence to vocabulary item'); ?></h3>
+                <md-input-container class="layout-wrap ng-scope layout-row">
+                <div flex="100">
+                    <md-autocomplete  md-selected-item="selectedItem" md-search-text="searchText" md-items="item in link.getMatches(searchText)" 
+                                      md-item-text="item.display" md-item-id="item.id" md-require-match="false"
+                                      md-floating-label="<?= __('Vocabulary') ?>"
+                                      md-delay="1000" >
+                    <span md-highlight-text="searchText">{{item.display}}</span>
+                    </md-autocomplete>
+                </div>
+                <div flex="80">
+                    <ng-messages for="form.$error" style="color:maroon" role="alert" md-auto-hide="false">
+                    <ng-message when="ajaxErr">             <?php __('Unknown AJAX error occured'); ?></ng-message>
+                    <ng-message when="alreadyAssociated">   <?php __('The sentence is already associated with this vocabulary item'); ?></ng-message>
+                    </ng-messages>    
+                        
+                </div>
+                <div flex="20">
+                    <button class="md-raised md-primary md-button md-ink-ripple" 
+                            ng-click="link.linkCurrent(link.selectedItem);" type="submit"  
+                            ng-disabled="ajaxUnderway" aria-label="Link">
+                        <span class="ng-scope"><?php __('Link'); ?></span>
+                    </button>
+                </div>
+                    
+                </md-input-container>
+        </div>
+        <?php
+        //Default to last vocabulary from session
+        if($this->Session->check('lastVocabulary')){
+            $lastVocab = $this->Session->read('lastVocabulary');
+            echo $this->Javascript->codeBlock(
+                    'var lastVocabulary = '.json_encode($lastVocab).';',
+                    array('allowCache' => true)
+                    );
+        }
+        
+        $this->Javascript->link('sentences.link.js', false);
+    }
+    
     public function linkToSentenceButton($sentenceId, $langFilter = 'und') {
         $langFilter = json_encode($langFilter);
         $image = $this->Images->svgIcon(
@@ -602,6 +688,7 @@ class MenuHelper extends AppHelper
         $langFilter = 'und',
         $hasAudio = true
     ) {
+        $this->flushFooter();
         ?>
         <ul class="menu">
 
@@ -627,10 +714,14 @@ class MenuHelper extends AppHelper
         // Add to list
         $this->addToListButton($sentenceId, $isLogged);
 
+        if($isLogged){
+            $this->linkToVocabulary($sentenceId);
+        }
+        
         if (CurrentUser::isTrusted()) {
             $this->linkToSentenceButton($sentenceId, $langFilter);
         }
-
+        
         if (CurrentUser::canRemoveSentence($sentenceId, null, $ownerName)) {
             // Delete
             $this->deleteButton($sentenceId, $hasAudio);

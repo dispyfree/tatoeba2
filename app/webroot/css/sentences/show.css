@@ -139,3 +139,26 @@
     vertical-align: middle;
     margin: 0 2px 5px 0;
 }
+
+/*
+ * vocabulary autocomplete
+ */
+
+.vocabularyAutoComplete button{
+    margin-bottom:auto;
+    margin-top:3px;
+    margin-left:15px;
+}
+
+.vocabularyAutoComplete md-autocomplete-wrap{
+    max-height:60px;
+}
+
+.vocabularyAutoComplete md-autocomplete-wrap md-input-container{
+    margin-top:0px;
+}
+
+.assocSentenceIcon{
+    font-size:16px;
+    color: rgba(0, 0, 0, 0.34);
+}
