@@ -78,5 +78,6 @@ echo $this->Html->scriptBlock(
         'var globalSentences = '.json_encode($sentences).';'
        .'var globalVocabId = '.$vocabulary['UsersVocabulary']['id'].';'
        .'var globalTerm = '.json_encode($vocabulary['Vocabulary']['text']).';'
+       .'var globalLang = '.json_encode($vocabulary['Vocabulary']['lang']).';'
         );
 $this->Javascript->link('vocabulary_sentences.js', false);

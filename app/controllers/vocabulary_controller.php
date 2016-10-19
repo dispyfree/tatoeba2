@@ -232,6 +232,7 @@ class VocabularyController extends AppController
      *  numAdded:   number of associated sentences
      * }
      * Terms with length  < 3 will be ignored for performance reasons
+     * @todo optimize performance (LIKE => very slow)
      * @param string data[term] The term to search for (POST)
      * @return  string  a JSON encoded list (see above)
      */
@@ -344,7 +345,7 @@ class VocabularyController extends AppController
     public function sentences($id){
          $this->helpers[] = 'Pagination';
          
-         $sentences = $this->Sentence->findByUserVocabulary($id);
+         $sentences = $this->UsersVocabulary->usersSentences($id);
          $this->UsersVocabulary->contain('Vocabulary');
          $vocabulary = $this->UsersVocabulary->findById($id);
          

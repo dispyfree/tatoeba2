@@ -103,13 +103,7 @@ class Sentence extends AppModel
             'foreignKey' => 'sentence_id',
             'associationForeignKey' => 'tag_id',
             'with' => 'TagsSentences',
-        ),
-        'UsersVocabulary'           => array(
-            'className' => 'UsersVocabulary',
-            'joinTable' => 'users_vocabulary_sentences',
-            'foreign_key' => 'sentence_id',
-            'associationForeignKey' => 'user_vocabulary_id',
-        ) 
+        )
     );
 
 
@@ -1232,6 +1226,28 @@ class Sentence extends AppModel
         }
 
         return false;
+    }
+    
+    /**
+     * Uses Sphinx to search for sentences containing the given term
+     * @param string $lang    String, language
+     * @param string $term    the term to search for
+     * @param int   $limit    limts the number of results; defaults to no limit
+     * @return array    the search results
+     */
+    public function findByFuzzyTerm($lang, $term, $limit = 0){
+        $this->Behaviors->attach('Sphinx');
+        $index = array($lang . '_main_index', $lang . '_delta_index');
+        $sphinx = array(
+            'index' => $index,
+            'matchMode' => SPH_MATCH_EXTENDED2
+        );
+        $query = '"'.$term.'"';
+        return $this->find('all', array(
+            'sphinx' => $sphinx,
+            'search' => $query,
+            'limit'  => $limit
+        ));
     }
 }
 ?>

@@ -576,12 +576,20 @@ class SentencesController extends AppController
     public function suggestions(){
         $maxSuggestions = 15;
         $term = @$this->data['term'];
-        $sentences = $this->Sentence->find('all', array(
-           'limit' => $maxSuggestions,
-            'conditions' => array(
-                'text LIKE' => '%'.$term.'%'
-            )
-        ));
+        $lang = @$this->data['lang'];
+        
+        $sentences = array();
+        if(!Configure::read('Search.enabled')){
+            $sentences = $this->Sentence->find('all', array(
+               'limit' => $maxSuggestions,
+                'conditions' => array(
+                    'text LIKE' => '%'.$term.'%'
+                )
+            ));
+        }
+        else{
+            $sentences = $this->Sentence->findByFuzzyTerm($lang, $term, $maxSuggestions);
+        }
         
         $this->autoRender = false;
         $res = array();

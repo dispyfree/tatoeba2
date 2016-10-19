@@ -26,6 +26,7 @@
         //This is the UserVocabulary ID!
         $scope.vocabId   = globalVocabId;  
         $scope.term = globalTerm;
+        $scope.lang = globalLang;
         
         $scope.ajaxUnderway = false;
         $scope.fetchingSuggestions = false;
@@ -100,7 +101,8 @@
                 method: 'POST',
                 url: '/sentences/suggestions',
                 data:{
-                'data[term]'          : $scope.term
+                'data[term]'          : $scope.term,
+                'data[lang]'          : $scope.lang
                 }
                 }).then(function successCallback(response) {
                     $scope.fetchingSuggestions = false;

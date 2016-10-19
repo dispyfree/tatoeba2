@@ -40,8 +40,20 @@ class UsersVocabulary extends AppModel
     public $actsAs = array('Containable', 'Hashable');
     public $belongsTo = array(
         'Vocabulary' => array('foreignKey' => 'vocabulary_id'),
-        'User' => array('foreignKey' => 'user_id')
+        'User' => array('foreignKey' => 'user_id'),
+        'Sentence'           => array(
+            'className' => 'Sentence',
+            'joinTable' => 'users_vocabulary_sentences',
+            'foreign_key' => 'user_vocabulary_id',
+            'associationForeignKey' => 'sentence_id',
+        )
     );
+    
+    public $hasMany = array(
+      'UsersVocabularySentences' => array(
+      )  
+    );
+    
 
     /**
      * Add a vocabulary item to users_vocabulary pivot table.
@@ -91,6 +103,21 @@ class UsersVocabulary extends AppModel
         );
 
         return $result;
+    }
+    
+    
+    public function usersSentences($id){
+        
+        $res = $this->UsersVocabularySentences->find('all', array( 
+                'conditions' => array(
+                    'user_vocabulary_id'                => $id,
+                    'UsersVocabularySentences.user_id'  => CurrentUser::get('id'),
+                ),
+             'contain' => array('Sentence')
+            )
+        );
+        
+        return $res;
     }
 }
 ?>

@@ -63,8 +63,10 @@ class UsersVocabularySentences extends AppModel
          
         $assoc = array( 
             'UsersVocabularySentences' => array(
-                'sentence_id'                => $sentence['Sentence']['id'],
+                'user_id'                   => CurrentUser::get('id'),
                 'user_vocabulary_id'        => $uVocabulary['UsersVocabulary']['id'],
+                'vocabulary_id'             => $uVocabulary['UsersVocabulary']['vocabulary_id'],
+                'sentence_id'               => $sentence['Sentence']['id'],
                 'automatically_associated'  => false
             )
         );

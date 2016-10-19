@@ -8,13 +8,14 @@
 -- Table structure for table `users_vocabulary_sentences`
 --
 
-CREATE TABLE `users_vocabulary_sentences` (
+CREATE TABLE IF NOT EXISTS `users_vocabulary_sentences` (
   `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
   `user_vocabulary_id` int(11) NOT NULL,
+  `vocabulary_id` int(11) NOT NULL,
   `sentence_id` int(11) NOT NULL,
   `automatically_associated` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
 
 --
 -- Indexes for dumped tables
