@@ -280,13 +280,16 @@ class MenuHelper extends AppHelper
     
     public function linkToVocabulary($sentenceId){
         ?>
-            
-        <li class="option" 
+        <li class="option" title="Add to list">            
+            <a><svg width="20" height="16">
+                <use xlink:href="/img/library_add.svg"></use></svg></a>
+        </li>    
+        <!--<li class="option" 
              ng-click="link.toggleForm(<?php echo $sentenceId; ?>)" title="<?= __('Link to vocabulary'); ?>" >
              <md-icon aria-label="<?= __('associate item'); ?>" 
                       class="assocSentenceIcon ng-scope material-icons">library_add</md-icon>
              
-        </li>
+        </li>-->
          
         <?php
         $this->registerFooter('linkVocabularyFooter');
